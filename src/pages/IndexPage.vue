@@ -5,7 +5,7 @@
             <q-img src="https://img.freepik.com/free-vector/sign-page-abstract-concept-illustration_335657-3875.jpg" alt="" :ratio="1" />
         </div>
         <div class="col-md-4 col-12 self-center">
-            <div class="text-h4 text-deep-purple-10 text-weight-bold text-center q-mt-sm">Attendance</div>
+            <div class="text-h4 text-indigo-14 text-weight-bold text-center q-mt-sm">Attendance</div>
             <div class="text-center mobile-only q-mt-sm">
                 <img src="https://img.freepik.com/free-vector/sign-page-abstract-concept-illustration_335657-3875.jpg" alt="" height="150px" width="150px" />
             </div>
@@ -21,11 +21,11 @@
             </div>
             <div class="q-mt-lg row justify-center">
                 <div class="col-md-5 col-6 q-mt-sm">
-                    <a href="" class="text-deep-purple-10" style="text-decoration: none;">Forgot password?</a>
+                    <a href="" class="text-indigo-14" style="text-decoration: none;">Forgot password?</a>
                 </div>
             </div>
             <div class="q-mt-lg">
-                <q-btn class="full-width" color="deep-purple-10" label="Sign In" @click="addEmployee" />
+                <q-btn class="full-width" color="indigo-14" label="Sign In" @click="addEmployee" />
             </div>
         </div>
     </div>

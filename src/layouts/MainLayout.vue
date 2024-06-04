@@ -1,11 +1,11 @@
 <template>
   <div class="">
     <q-layout view="lHh Lpr lff">
-      <q-header flat  :class="$q.dark.isActive ? 'bg-secondary' : 'bg-deep-purple-10'" class="lt-md">
+      <q-header flat  :class="$q.dark.isActive ? 'bg-secondary' : 'bg-indigo-14'" class="lt-md">
         <q-toolbar>
           <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
           <q-toolbar-title>Attendance </q-toolbar-title>
-          <q-avatar size="28px"  class="bg-white text-deep-purple-10">{{ firstLetter }}</q-avatar>
+          <q-avatar size="28px"  class="bg-white text-indigo-14">{{ firstLetter }}</q-avatar>
 
         </q-toolbar>
       </q-header>
@@ -60,7 +60,7 @@
             dense
             class="btn"
             unelevated
-            color="deep-purple-10"
+            color="indigo-14"
             icon="chevron_left"
             @click="miniState = true"
           />
