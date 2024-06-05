@@ -1,7 +1,7 @@
 <template>
 <div class="q-pa-md gt-sm">
-    <div class="row justify-end q-mt-md ">
-        <div class="col-2 " style="text-align: end; margin-right: 25px;">
+    <div class="row justify-end  q-mt-xs">
+        <div class="col-2 self-center" style="text-align: end; margin-right: 25px;">
 
             <div @click="checkIn" v-show="checkinButton">
                 <q-icon name="check_circle" color="green" size="sm" />&nbsp;<span class="q-mt-sm" style="cursor: pointer;">checkin</span></div>
@@ -9,37 +9,38 @@
                 <q-icon name="check_circle" color="red" size="sm" />&nbsp;<span class="q-mt-sm" style="cursor: pointer;">checkout</span></div>
         </div>
 
-        <div class="col-2">
+        <div class="col-2 self-center">
             <q-icon name='alarm' color="indigo-13" size="sm" />&nbsp;<span class="q-mt-sm " style="cursor: pointer;">request leave</span>
         </div>
-        <div class="col-1 q-ms-md">
+        <div class="col-1   q-mt-md q-mb-sm">
             <q-avatar size="28px" class="text-white bg-indigo-14 q-mb-md">{{ firstLetter }}</q-avatar>
+            
         </div>
     </div>
 
 </div>
-<div class="q-pa-lg row  q-mt-md">
-    <div class="col-md-4 col-12" v-for="atten in attendance" v-show="attendance.length!=0">
+<div class="q-pa-lg row  justify-around">
+    <div class="col-md-4 col-12 q-mt-lg" v-for="atten in attendance" v-show="attendance.length!=0">
         <q-card flat class="my-card ">
 
-            <q-card-section class=" text-dark q-pa-md" style="background-color: #d3ffcf;">
+            <q-card-section class=" text-dark " style="background-color: #d3ffcf;">
 
                 <div class="row justify-around">
                     <div class="col-3"><span class="text-body text-weight-bolder">{{ atten.month }}&nbsp;{{ atten.date }}</span></div>
                     <div class="col-4"><span class="text-caption text-center" :style="atten.checkIn > '10:00 AM' ? { color: 'red' } : { color: 'black' }">
                             <q-icon name="logout" class="q-mb-xs" />{{ atten.checkIn }}</span></div>
-                    <div class="col-4"><span class="text-caption" :style="atten.checkOut < '07:00 PM' ? { color: 'red' } : { color: 'black' }">
-                            <q-icon name="logout" class="q-mb-xs" />{{ atten.checkOut  }}</span></div>
+                    <div class="col-4"><span class="text-caption " :style="atten.checkOut < '07:00 PM' ? { color: 'red' } : { color: 'black' }">
+                            <q-icon name="logout" class="q-mb-xs"  v-show="atten.checkOut!=''" />{{ atten.checkOut  }}</span></div>
                 </div>
 
             </q-card-section>
 
-            <q-badge color="orange" floating>present</q-badge>
+            <q-badge :color="atten.checkOut>'1.00 PM'?'orange':'green-9'" floating class="q-pa-xs">{{ atten.checkOut>'1.00 PM'?'halfday':'present' }}</q-badge>
 
         </q-card>
     </div>
 </div>
-<q-page-sticky position="bottom-right" :offset="[18, 18]" class='lt-md'>
+<q-page-sticky position="bottom-right" :offset="[18, 18]" class='lt-md' flat>
     <q-fab color="indigo-14" direction="up" class="custom-fab" padding="xs">
         <template v-slot:icon="{ opened }">
             <q-icon :class="{ 'example-fab-animate--hover': opened !== true }" name="keyboard_arrow_up" :size="xs" />
@@ -65,7 +66,7 @@ export default {
         return {
             username: '',
             firstLetter: '',
-            checkinButton: true,
+            checkinButton: '',
             months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
             currentMonthName: '',
             currentDateValue: '',
@@ -86,9 +87,7 @@ export default {
         console.log(this.currentDateValue);
         this.currentMonthName = this.months[currentMonth];
         console.log(this.currentMonthName);
-        if (this.attendance.checkOut == '') {
-            this.checkinButton = false
-        }
+       
     },
     methods: {
         checkIn() {
@@ -120,13 +119,16 @@ export default {
 
                 })
                 .catch(error => {
-                    this.$q.notify({
-                        type: 'negative',
-                        message: 'There was an error in login: ' + error.message,
-                        position: 'top'
-                    });
-                    console.error('There was an error creating the employee:', error.message);
-                })
+        // Extract the message from the server response if available
+        let message = 'There was an error in login: ' + (error.response ? error.response.data.message : error.message);
+        
+        this.$q.notify({
+            type: 'negative',
+            message: message,
+            position: 'top'
+        });
+        console.error('There was an error creating the attendance record:', message);
+    });
         },
         checkOut() {
             this.checkinButton = true;
@@ -168,7 +170,14 @@ export default {
         getAttendance() {
             axios.get("http://localhost:3000/attendance/getAttendanceByEmployee/" + this.userId)
                 .then(res => {
-                    console.log('attendance:', this.attendance = res.data);
+                    console.log('attendance:', this.attendance = res.data.data);
+                    console.log("=======================>",this.attendance);
+                    if (this.attendance.length > 0 && this.attendance[this.attendance.length - 1].checkOut === '') {
+            this.checkinButton = false
+            console.log("hii");
+        }else{
+            this.checkinButton = true
+        }
                 })
         }
     }
@@ -211,4 +220,6 @@ q-fab-action {
         transform: translate3d(4px, 0, 0)
     }
 }
+
+
 </style>
