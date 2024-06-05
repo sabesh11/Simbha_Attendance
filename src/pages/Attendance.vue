@@ -35,7 +35,7 @@
 
             </q-card-section>
 
-            <q-badge :color="atten.checkOut>'1.00 PM'?'orange':'green-9'" floating class="q-pa-xs">{{ atten.checkOut>'1.00 PM'?'halfday':'present' }}</q-badge>
+            <q-badge :color="atten.checkOut>'1.00 PM'?'orange': isWeekend ? 'purple-9':'green-9'" floating class="q-pa-xs">{{ atten.checkOut>'1.00 PM'?'halfday': isWeekend ? 'weekend' : 'present' }}</q-badge>
 
         </q-card>
     </div>
@@ -83,11 +83,19 @@ export default {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
         const currentDat = currentDate.getDate();
+       
         this.currentDateValue = currentDat;
         console.log(this.currentDateValue);
         this.currentMonthName = this.months[currentMonth];
         console.log(this.currentMonthName);
        
+    },
+    computed:{
+        isWeekend() {
+            const dayOfWeek = new Date().getDay();
+            return dayOfWeek === 0 || dayOfWeek === 6;
+  }
+
     },
     methods: {
         checkIn() {
