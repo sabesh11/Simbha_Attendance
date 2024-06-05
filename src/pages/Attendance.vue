@@ -14,7 +14,7 @@
         </div>
         <div class="col-1   q-mt-md q-mb-sm">
             <q-avatar size="28px" class="text-white bg-indigo-14 q-mb-md">{{ firstLetter }}</q-avatar>
-            
+
         </div>
     </div>
 
@@ -28,9 +28,9 @@
                 <div class="row justify-around">
                     <div class="col-3"><span class="text-body text-weight-bolder">{{ atten.month }}&nbsp;{{ atten.date }}</span></div>
                     <div class="col-4"><span class="text-caption text-center" :style="atten.checkIn > '10:00 AM' ? { color: 'red' } : { color: 'black' }">
-                            <q-icon name="logout" class="q-mb-xs" />{{ atten.checkIn }}</span></div>
+                            <q-icon name="logout" class="q-mb-xs" color="green-6" />{{ atten.checkIn }}</span></div>
                     <div class="col-4"><span class="text-caption " :style="atten.checkOut < '07:00 PM' ? { color: 'red' } : { color: 'black' }">
-                            <q-icon name="logout" class="q-mb-xs"  v-show="atten.checkOut!=''" />{{ atten.checkOut  }}</span></div>
+                            <q-icon name="logout" class="q-mb-xs" color="green-6" v-show="atten.checkOut!=''" />{{ atten.checkOut  }}</span></div>
                 </div>
 
             </q-card-section>
@@ -83,18 +83,18 @@ export default {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
         const currentDat = currentDate.getDate();
-       
+
         this.currentDateValue = currentDat;
         console.log(this.currentDateValue);
         this.currentMonthName = this.months[currentMonth];
         console.log(this.currentMonthName);
-       
+
     },
-    computed:{
+    computed: {
         isWeekend() {
             const dayOfWeek = new Date().getDay();
             return dayOfWeek === 0 || dayOfWeek === 6;
-  }
+        }
 
     },
     methods: {
@@ -127,16 +127,16 @@ export default {
 
                 })
                 .catch(error => {
-        // Extract the message from the server response if available
-        let message = 'There was an error in login: ' + (error.response ? error.response.data.message : error.message);
-        
-        this.$q.notify({
-            type: 'negative',
-            message: message,
-            position: 'top'
-        });
-        console.error('There was an error creating the attendance record:', message);
-    });
+                    // Extract the message from the server response if available
+                    let message = 'There was an error in login: ' + (error.response ? error.response.data.message : error.message);
+
+                    this.$q.notify({
+                        type: 'negative',
+                        message: message,
+                        position: 'top'
+                    });
+                    console.error('There was an error creating the attendance record:', message);
+                });
         },
         checkOut() {
             this.checkinButton = true;
@@ -179,13 +179,13 @@ export default {
             axios.get("http://localhost:3000/attendance/getAttendanceByEmployee/" + this.userId)
                 .then(res => {
                     console.log('attendance:', this.attendance = res.data.data);
-                    console.log("=======================>",this.attendance);
+                    console.log("=======================>", this.attendance);
                     if (this.attendance.length > 0 && this.attendance[this.attendance.length - 1].checkOut === '') {
-            this.checkinButton = false
-            console.log("hii");
-        }else{
-            this.checkinButton = true
-        }
+                        this.checkinButton = false
+                        console.log("hii");
+                    } else {
+                        this.checkinButton = true
+                    }
                 })
         }
     }
@@ -228,6 +228,4 @@ q-fab-action {
         transform: translate3d(4px, 0, 0)
     }
 }
-
-
 </style>
