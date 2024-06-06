@@ -25,7 +25,10 @@
                 </div>
             </div>
             <div class="q-mt-lg">
-                <q-btn class="full-width" color="indigo-14" label="Sign In" @click="addEmployee" />
+                <q-btn class="full-width bg-indigo-14 text-white" color="" label="Sign In" @click="addEmployee" flat/>
+            </div>
+            <div class="q-mt-lg text-center">
+                Don't have an account? <a href="" class="text-indigo-14">signup</a>
             </div>
         </div>
     </div>

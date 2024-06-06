@@ -1,7 +1,7 @@
 <template>
 <div class="q-pa-md gt-sm">
     <div class="row justify-end  q-mt-xs">
-        <div class="col-2 self-center" style="text-align: end; margin-right: 25px;">
+        <div class="col-2 self-center " style="text-align: end; margin-right: 25px;">
 
             <div @click="checkIn" v-show="checkinButton">
                 <q-icon name="check_circle" color="green" size="sm" />&nbsp;<span class="q-mt-sm" style="cursor: pointer;">checkin</span></div>
@@ -9,18 +9,18 @@
                 <q-icon name="check_circle" color="red" size="sm" />&nbsp;<span class="q-mt-sm" style="cursor: pointer;">checkout</span></div>
         </div>
 
-        <div class="col-2 self-center">
+        <div class="col-2 self-center ">
             <q-icon name='alarm' color="indigo-13" size="sm" />&nbsp;<span class="q-mt-sm " style="cursor: pointer;">request leave</span>
         </div>
-        <div class="col-1   q-mt-md q-mb-sm">
-            <q-avatar size="28px" class="text-white bg-indigo-14 q-mb-md">{{ firstLetter }}</q-avatar>
+        <div class="col-1  q-mt-md q-mb-sm text-start">
+            <q-avatar size="35px" class="text-white bg-indigo-14 q-mb-md">{{ firstLetter }}</q-avatar>
 
         </div>
     </div>
 
 </div>
 <div class="q-pa-lg row  justify-around">
-    <div class="col-md-4 col-12 q-mt-lg" v-for="atten in attendance" v-show="attendance.length!=0">
+   <div class="col-md-4 col-12 q-mt-lg" v-for="atten in attendance" v-show="attendance.length!=0">
         <q-card flat class="my-card ">
 
             <q-card-section class=" text-dark " style="background-color: #d3ffcf;">
@@ -38,6 +38,13 @@
             <q-badge :color="atten.checkOut>'1.00 PM'?'orange': isWeekend ? 'purple-9':'green-9'" floating class="q-pa-xs">{{ atten.checkOut>'1.00 PM'?'halfday': isWeekend ? 'weekend' : 'present' }}</q-badge>
 
         </q-card>
+    </div>
+</div>
+<div class="row justify-center q-mt-md" v-show="attendance.length==0">
+    <div class="col-md-12  self-center text-center" >
+        <img src="../assets/search-concept-illustration_114360-95.avif" height="160px" width="160px" class="lt-md">
+        <img src="../assets/search-concept-illustration_114360-95.avif" height="250px" width="250px" class="gt-sm">
+        <p class="text-caption text-grey-7">No user data are available</p>
     </div>
 </div>
 <q-page-sticky position="bottom-right" :offset="[18, 18]" class='lt-md' flat>
@@ -154,7 +161,7 @@ export default {
                 return;
             }
 
-            axios.post(`http://localhost:3000/attendance/addCheckout/665f5a9d17a0f79fd0c7e271`, {
+            axios.post(`http://localhost:3000/attendance/addCheckout/${this.attendance[this.attendance.length - 1]._id}`, {
                     checkOut: this.checkOutTime
                 })
                 .then(res => {
@@ -176,7 +183,7 @@ export default {
                 });
         },
         getAttendance() {
-            axios.get("http://localhost:3000/attendance/getAttendanceByEmployee/" + this.userId)
+            axios.get(`http://localhost:3000/attendance/getAttendanceByEmployee/${this.userId}`)
                 .then(res => {
                     console.log('attendance:', this.attendance = res.data.data);
                     console.log("=======================>", this.attendance);
