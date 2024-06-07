@@ -1,5 +1,39 @@
 <template>
-<div class="q-pa-md gt-sm">
+<q-drawer v-model="drawer1" show-if-above :mini="!drawer1 || miniState" @click.capture="drawerClick" :width="230" :breakpoint="500" class="gt-sm" :class="$q.dark.isActive ? 'bg-grey-9' : ''">
+    <q-scroll-area class="fit fixed q-mini-drawer-hide bg-grey-1" :horizontal-thumb-style="{ opacity: 0 }" style=" margin-top: 150px;">
+        <q-list padding>
+            <q-item clickable v-ripple active>
+                <q-item-section avatar>
+                    <q-icon name="event" />
+                </q-item-section>
+
+                <q-item-section>
+                    Attendance
+                </q-item-section>
+            </q-item>
+
+        </q-list>
+    </q-scroll-area>
+    <q-img class="  absolute-top q-mini-drawer-hide" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_r21v_iCVLKaiKHBRY9PnRnYUmqvc6jA8SQ&s" style="height: 150px">
+        <div class="absolute-bottom bg-transparent">
+            <q-avatar size="56px" class="q-mb-sm">
+                <img src="https://cdn.quasar.dev/img/avatar4.jpg">
+            </q-avatar>
+            <div class="text-weight-bold">{{ username }}</div>
+            <div>Employee</div>
+        </div>
+    </q-img>
+    <!--
+          in this case, we use a button (can be anything)
+          so that user can switch back
+          to mini-mode
+        -->
+    <div class="q-mini-drawer-active absolute" :style="{ top: '255px', right: miniState ? '24px' : '-29px' }">
+        <q-btn dense class="btn" unelevated color="indigo-14" icon="chevron_left" @click="toggleMiniState" />
+    </div>
+</q-drawer>
+<div class="q-pa-md gt-sm ">
+
     <div class="row justify-end  q-mt-xs">
         <div class="col-2 self-center " style="text-align: end; margin-right: 25px;">
 
@@ -19,17 +53,27 @@
     </div>
 
 </div>
-<div class="q-pa-lg row  justify-around">
-   <div class="col-md-4 col-12 q-mt-lg" v-for="atten in attendance" v-show="attendance.length!=0">
+<div class="q-pa-md row q-mt-md">
+    <div class="col-6 col-md-3">
+        <q-select dense outlined v-model="currentMonthName" :options="months" label="select month" class="text-overline" />
+    </div>&nbsp;&nbsp;
+    <div class="col-4 col-md-2">
+        <q-select dense outlined v-model="currentYear" :options="options" label="year" class="text-overline" />
+    </div>
+
+</div>
+<div class="q-pa-md row  justify-between">
+
+    <div v-for="atten in attendance" v-show="attendance.length!=0" :class="miniState == true ?'col-md-3 col-12 q-mt-md':'col-md-5 col-12 q-mt-md'">
         <q-card flat class="my-card ">
 
             <q-card-section class=" text-dark " style="background-color: #d3ffcf;">
 
-                <div class="row justify-around">
+                <div class="row justify-between">
                     <div class="col-3"><span class="text-body text-weight-bolder">{{ atten.month }}&nbsp;{{ atten.date }}</span></div>
                     <div class="col-4"><span class="text-caption text-center" :style="atten.checkIn > '10:00 AM' ? { color: 'red' } : { color: 'black' }">
                             <q-icon name="logout" class="q-mb-xs" color="green-6" />{{ atten.checkIn }}</span></div>
-                    <div class="col-4"><span class="text-caption " :style="atten.checkOut < '07:00 PM' ? { color: 'red' } : { color: 'black' }">
+                    <div class="col-4"><span class="text-caption " :style="atten.checkOut < '06:00 PM' ? { color: 'red' } : { color: 'black' }">
                             <q-icon name="logout" class="q-mb-xs" color="green-6" v-show="atten.checkOut!=''" />{{ atten.checkOut  }}</span></div>
                 </div>
 
@@ -41,7 +85,7 @@
     </div>
 </div>
 <div class="row justify-center q-mt-md" v-show="attendance.length==0">
-    <div class="col-md-12  self-center text-center" >
+    <div class="col-md-12  self-center text-center">
         <img src="../assets/search-concept-illustration_114360-95.avif" height="160px" width="160px" class="lt-md">
         <img src="../assets/search-concept-illustration_114360-95.avif" height="250px" width="250px" class="gt-sm">
         <p class="text-caption text-grey-7">No user data are available</p>
@@ -70,17 +114,24 @@ import axios from 'axios';
 export default {
     name: "Attendance",
     data() {
+
         return {
+            drawer1: false,
+            miniState: false,
             username: '',
+            model: null,
             firstLetter: '',
             checkinButton: '',
             months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
             currentMonthName: '',
             currentDateValue: '',
+            currentYear: '',
             checkInTime: '',
             checkOutTime: '',
             attendance: [],
-            userId: localStorage.getItem("userId")
+            options: ["aaa", 'bbb'],
+            userId: localStorage.getItem("userId"),
+
         }
     },
     mounted() {
@@ -90,11 +141,13 @@ export default {
         const currentDate = new Date();
         const currentMonth = currentDate.getMonth();
         const currentDat = currentDate.getDate();
-
+        this.currentYear = currentDate.getFullYear();
         this.currentDateValue = currentDat;
         console.log(this.currentDateValue);
         this.currentMonthName = this.months[currentMonth];
         console.log(this.currentMonthName);
+        this.getAttendance();
+        this.scheduleEndOfDayCheck();
 
     },
     computed: {
@@ -105,6 +158,21 @@ export default {
 
     },
     methods: {
+        toggleMiniState() {
+            this.miniState = !this.miniState;
+        },
+        drawerClick(e) {
+            // if in "mini" state and user
+            // click on drawer, we switch it to "normal" mode
+            if (miniState.value) {
+                miniState.value = false
+
+                // notice we have registered an event with capture flag;
+                // we need to stop further propagation as this click is
+                // intended for switching drawer to "normal" mode only
+                e.stopPropagation()
+            }
+        },
         checkIn() {
             this.checkinButton = false
             this.checkInTime = new Date().toLocaleTimeString([], {
@@ -194,7 +262,54 @@ export default {
                         this.checkinButton = true
                     }
                 })
+        },
+        scheduleEndOfDayCheck() {
+            const now = new Date();
+            const endOfDay = new Date();
+            endOfDay.setHours(18, 0, 0, 0); // Set time to 6 PM
+
+            if (now < endOfDay) {
+                const timeUntilEndOfDay = endOfDay - now;
+                setTimeout(this.checkEndOfDayAttendance, timeUntilEndOfDay);
+            }
+        },
+        checkEndOfDayAttendance() {
+            const currentDate = new Date();
+            const currentMonth = currentDate.toLocaleString('default', {
+                month: 'long'
+            });
+            const currentDay = currentDate.getDate();
+
+            if (this.isWeekday) {
+                axios.get(`http://localhost:3000/attendance/getAttendanceByEmployee/${this.userId}`)
+                    .then(res => {
+                        const attendance = res.data.data;
+                        const todayAttendance = attendance.find(att => att.date === currentDay && att.month === currentMonth);
+
+                        if (!todayAttendance) {
+                            const attendanceData = {
+                                month: currentMonth,
+                                date: currentDay,
+                                checkIn: 'N/A',
+                                checkOut: 'N/A',
+                                employeeId: this.userId
+                            };
+
+                            axios.post('http://localhost:3000/attendance/addAttendance', attendanceData)
+                                .then(response => {
+                                    console.log('No check-in found, recorded N/A');
+                                })
+                                .catch(error => {
+                                    console.error('Error recording N/A attendance:', error.message);
+                                });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching attendance:', error.message);
+                    });
+            }
         }
+
     }
 }
 </script>
@@ -234,5 +349,11 @@ q-fab-action {
     60% {
         transform: translate3d(4px, 0, 0)
     }
+}
+
+.btn {
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+    padding: 10px;
 }
 </style>
