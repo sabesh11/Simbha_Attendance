@@ -129,13 +129,14 @@ export default {
             checkInTime: '',
             checkOutTime: '',
             attendance: [],
-            options: ["aaa", 'bbb'],
+            options: [2023,2024,2025,2026,2027,2028,2029,2030 ],
             userId: localStorage.getItem("userId"),
 
         }
     },
     mounted() {
         this.getAttendance();
+        this.scheduleEndOfDayCheck();
         this.username = localStorage.getItem("username")
         this.firstLetter = this.username.charAt(0)
         const currentDate = new Date();
@@ -146,8 +147,6 @@ export default {
         console.log(this.currentDateValue);
         this.currentMonthName = this.months[currentMonth];
         console.log(this.currentMonthName);
-        this.getAttendance();
-        this.scheduleEndOfDayCheck();
 
     },
     computed: {
