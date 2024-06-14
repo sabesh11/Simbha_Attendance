@@ -127,9 +127,9 @@ export default {
             currentDateValue: '',
             currentYear: '',
             checkInTime: '',
-            checkOutTime: '',
+            checkOutTime: 'N/A',
             attendance: [],
-            options: [2023,2024,2025,2026,2027,2028,2029,2030 ],
+            options: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030],
             userId: localStorage.getItem("userId"),
 
         }
@@ -254,7 +254,7 @@ export default {
                 .then(res => {
                     console.log('attendance:', this.attendance = res.data.data);
                     console.log("=======================>", this.attendance);
-                    if (this.attendance.length > 0 && this.attendance[this.attendance.length - 1].checkOut === '') {
+                    if (this.attendance.length > 0 && this.attendance[this.attendance.length - 1].checkOut === 'N/A') {
                         this.checkinButton = false
                         console.log("hii");
                     } else {
