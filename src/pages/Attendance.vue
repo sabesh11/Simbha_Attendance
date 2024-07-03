@@ -71,7 +71,7 @@
 
                 <div class="row justify-between">
                     <div class="col-3"><span class="text-body text-weight-bolder">{{ atten.month }}&nbsp;{{ atten.date }}</span></div>
-                    <div class="col-4"><span class="text-caption text-center" :style="atten.checkIn > '10:00 AM' ? { color: 'red' } : { color: 'black' }">
+                    <div class="col-4"><span class="text-caption text-center" :style="atten.checkIn > '10:00 AM' || atten.checkIn.includes('PM') ? { color: 'red' } : { color: 'black' }">
                             <q-icon name="logout" class="q-mb-xs" color="green-6" />{{ atten.checkIn }}</span></div>
                     <div class="col-4"><span class="text-caption " :style="atten.checkOut < '06:00 PM' ? { color: 'red' } : { color: 'black' }">
                             <q-icon name="logout" class="q-mb-xs" color="green-6" v-show="atten.checkOut!=''" />{{ atten.checkOut  }}</span></div>
@@ -121,13 +121,13 @@ export default {
             username: '',
             model: null,
             firstLetter: '',
-            checkinButton: '',
+            checkinButton: true,
             months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
             currentMonthName: '',
             currentDateValue: '',
             currentYear: '',
             checkInTime: '',
-            checkOutTime: 'N/A',
+            checkOutTime: '',
             attendance: [],
             options: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030],
             userId: localStorage.getItem("userId"),
@@ -254,7 +254,8 @@ export default {
                 .then(res => {
                     console.log('attendance:', this.attendance = res.data.data);
                     console.log("=======================>", this.attendance);
-                    if (this.attendance.length > 0 && this.attendance[this.attendance.length - 1].checkOut === 'N/A') {
+                    if (this.attendance.length > 0 && this.attendance[this.attendance.length - 1].checkOut ==
+                        "") {
                         this.checkinButton = false
                         console.log("hii");
                     } else {

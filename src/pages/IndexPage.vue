@@ -5,7 +5,7 @@
             <q-img src="https://img.freepik.com/free-vector/sign-page-abstract-concept-illustration_335657-3875.jpg" alt="" :ratio="1" />
         </div>
         <div class="col-md-4 col-12 self-center">
-            <div class="text-h4 text-indigo-14 text-weight-bold text-center q-mt-sm">Attendance</div>
+            <div class="text-h4 text-indigo-14 text-weight-bold text-center ">Simbha-Attendance</div>
             <div class="text-center mobile-only q-mt-sm">
                 <img src="https://img.freepik.com/free-vector/sign-page-abstract-concept-illustration_335657-3875.jpg" alt="" height="150px" width="150px" />
             </div>
