@@ -55,14 +55,58 @@
 </div>
 <div class="q-pa-md row q-mt-md">
     <div class="col-6 col-md-3">
-        <q-select dense outlined v-model="currentMonthName" :options="months" label="select month" class="text-overline" />
+        <q-select dense outlined v-model="currentMonthName" :options="months" label="select month" class="text-overline" @update:model-value="getattendancebyMonths(currentMonthName)" />
     </div>&nbsp;&nbsp;
     <div class="col-4 col-md-2">
         <q-select dense outlined v-model="currentYear" :options="options" label="year" class="text-overline" />
     </div>
 
 </div>
-<div class="q-pa-md row  justify-between">
+<div v-if="loading">
+      <q-item style="max-width: 300px">
+        <q-item-section avatar>
+          <q-skeleton type="QAvatar" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            <q-skeleton type="text" />
+          </q-item-label>
+          <q-item-label caption>
+            <q-skeleton type="text" width="65%" />
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+
+      <q-item style="max-width: 300px">
+        <q-item-section avatar>
+          <q-skeleton type="QAvatar" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            <q-skeleton type="text" />
+          </q-item-label>
+          <q-item-label caption>
+            <q-skeleton type="text" width="90%" />
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+
+      <q-item style="max-width: 300px">
+        <q-item-section avatar>
+          <q-skeleton type="QAvatar" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            <q-skeleton type="text" width="35%" />
+          </q-item-label>
+          <q-item-label caption>
+            <q-skeleton type="text" />
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+    </div>
+    <div v-else>
+<div class="q-pa-md row  justify-between" >
 
     <div v-for="atten in attendance" v-show="attendance.length!=0" :class="miniState == true ?'col-md-3 col-12 q-mt-md':'col-md-5 col-12 q-mt-md'">
         <q-card flat class="my-card ">
@@ -70,11 +114,11 @@
             <q-card-section class=" text-dark " style="background-color: #d3ffcf;">
 
                 <div class="row justify-between">
-                    <div class="col-3"><span class="text-body text-weight-bolder">{{ atten.month }}&nbsp;{{ atten.date }}</span></div>
-                    <div class="col-4"><span class="text-caption text-center" :style="atten.checkIn > '10:00 AM' || atten.checkIn.includes('PM') ? { color: 'red' } : { color: 'black' }">
+                    <div class="col-4"><span class="text-body text-weight-bolder">{{ atten.month }}&nbsp;{{ atten.date }}</span></div>
+                    <div class="col-4 text-center"><span class="text-caption text-center" :style="atten.checkIn > '10:00 AM' || atten.checkIn.includes('PM') ? { color: 'red' } : { color: 'black' }">
                             <q-icon name="logout" class="q-mb-xs" color="green-6" />{{ atten.checkIn }}</span></div>
-                    <div class="col-4"><span class="text-caption " :style="atten.checkOut < '06:00 PM' ? { color: 'red' } : { color: 'black' }">
-                            <q-icon name="logout" class="q-mb-xs" color="green-6" v-show="atten.checkOut!=''" />{{ atten.checkOut  }}</span></div>
+                    <div class="col-4 text-center"><span class="text-caption " :style="atten.checkOut < '06:00 PM' ? { color: 'red' } : { color: 'black' }">
+                            <q-icon name="logout" class="q-mb-xs" color="green-6" v-show="atten.checkOut!=''" />{{ atten.checkOut ==''?'N/A': atten.checkOut }}</span></div>
                 </div>
 
             </q-card-section>
@@ -83,15 +127,7 @@
 
         </q-card>
     </div>
-</div>
-<div class="row justify-center q-mt-md" v-show="attendance.length==0">
-    <div class="col-md-12  self-center text-center">
-        <img src="../assets/search-concept-illustration_114360-95.avif" height="160px" width="160px" class="lt-md">
-        <img src="../assets/search-concept-illustration_114360-95.avif" height="250px" width="250px" class="gt-sm">
-        <p class="text-caption text-grey-7">No user data are available</p>
-    </div>
-</div>
-<q-page-sticky position="bottom-right" :offset="[18, 18]" class='lt-md' flat>
+    <q-page-sticky position="bottom-right" :offset="[18, 18]" class='lt-md' flat>
     <q-fab color="indigo-14" direction="up" class="custom-fab" padding="xs">
         <template v-slot:icon="{ opened }">
             <q-icon :class="{ 'example-fab-animate--hover': opened !== true }" name="keyboard_arrow_up" :size="xs" />
@@ -106,6 +142,15 @@
         <q-fab-action padding="xs" external-label label-position="left" class="text-red bg-white" @click="checkOut" v-show="checkinButton==false" icon="check_circle" label="Checkout" />
     </q-fab>
 </q-page-sticky>
+</div>
+<div class="row justify-center q-mt-md" v-show="attendance.length==0">
+    <div class="col-md-12  self-center text-center">
+        <img src="../assets/search-concept-illustration_114360-95.avif" height="160px" width="160px" class="lt-md">
+        <img src="../assets/search-concept-illustration_114360-95.avif" height="250px" width="250px" class="gt-sm">
+        <p class="text-caption text-grey-7">No user data are available</p>
+    </div>
+</div>
+</div>
 </template>
 
 <script>
@@ -131,6 +176,7 @@ export default {
             attendance: [],
             options: [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030],
             userId: localStorage.getItem("userId"),
+            loading: true
 
         }
     },
@@ -147,12 +193,20 @@ export default {
         console.log(this.currentDateValue);
         this.currentMonthName = this.months[currentMonth];
         console.log(this.currentMonthName);
+        const dayOfWeek = new Date().getDay();
+        if (dayOfWeek === 0) {
+           this.checkInTime='N/A';
+           this.checkOutTime='N/A'
+           this.checkIn()
+        } else {
+           this.checkInTime= '';
+        }
 
     },
     computed: {
         isWeekend() {
             const dayOfWeek = new Date().getDay();
-            return dayOfWeek === 0 || dayOfWeek === 6;
+            return dayOfWeek === 0;
         }
 
     },
@@ -161,14 +215,11 @@ export default {
             this.miniState = !this.miniState;
         },
         drawerClick(e) {
-            // if in "mini" state and user
-            // click on drawer, we switch it to "normal" mode
+           
             if (miniState.value) {
                 miniState.value = false
 
-                // notice we have registered an event with capture flag;
-                // we need to stop further propagation as this click is
-                // intended for switching drawer to "normal" mode only
+               
                 e.stopPropagation()
             }
         },
@@ -253,6 +304,7 @@ export default {
             axios.get(`http://localhost:3000/attendance/getAttendanceByEmployee/${this.userId}`)
                 .then(res => {
                     console.log('attendance:', this.attendance = res.data.data);
+                    this.loading = false; 
                     console.log("=======================>", this.attendance);
                     if (this.attendance.length > 0 && this.attendance[this.attendance.length - 1].checkOut ==
                         "") {
@@ -308,6 +360,16 @@ export default {
                         console.error('Error fetching attendance:', error.message);
                     });
             }
+        },
+        getattendancebyMonths(month){
+            console.log("value===============",month);
+            
+            axios.get(`http://localhost:3000/attendance/getAttendaancebyMonth/${this.userId}/${month}`)
+                .then(res => {
+                    console.log('attendance:', this.attendance = res.data.data);
+                    console.log("=======================>", this.attendance);
+                   
+                })
         }
 
     }
